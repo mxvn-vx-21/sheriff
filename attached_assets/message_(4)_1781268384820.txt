@@ -1,0 +1,787 @@
+# SMASH KNIGHTS - COMPLETE DISCORD BOT SPECIFICATION
+
+## PROJECT OVERVIEW
+
+Create a professional Discord bot called **Smash Knights**.
+
+The bot is designed specifically for the SmashKarts community and tournament ecosystem but must also function as a complete multipurpose Discord management bot.
+
+The bot should be built for large communities and should support thousands of users.
+
+The architecture must be modular, scalable, secure, and allow future expansion without rewriting existing systems.
+
+Use modern Discord slash commands.
+
+Use a database to store all persistent data.
+
+Suggested stack:
+
+* Node.js
+* Discord.js latest version
+* PostgreSQL or MongoDB
+* Redis caching (optional)
+* Docker support
+* Modular command system
+* AI integration support
+* Web dashboard ready architecture
+
+---
+
+# CONFIGURATION
+
+Use placeholders for all secrets.
+
+BOT_TOKEN
+DATABASE_URL
+
+OPENAI_API_KEY
+
+GEMINI_API_KEY
+
+YOUTUBE_API_KEY
+
+ADMIN_GUILD_ID=1514915686273646612
+
+---
+
+# PERMISSIONS SYSTEM
+
+The bot should have:
+
+1. User Commands
+2. Moderator Commands
+3. Admin Commands
+4. Owner Commands
+
+Special rule:
+
+Certain content-management commands can only be used inside guild:
+
+1514915686273646612
+
+and only by administrators. These administrators are owners, rest adminstrators from other servers are just administrators and connot use Owner commands.
+
+---
+
+# MAIN MODULES
+
+The bot should contain the following major systems.
+
+---
+
+## 1. SMASHKARTS DEX
+
+Purpose:
+
+A searchable encyclopedia.
+
+Admins can add entries.
+
+Users can search entries.
+
+Commands:
+
+/dex add
+
+/dex edit
+
+/dex delete
+
+/dex search
+
+/dex random
+
+/dex list
+
+Each entry stores:
+
+* Name
+* Category
+* Description
+* Images
+* Videos
+* Tips
+* Difficulty
+* Tags
+
+Categories:
+
+* Weapons
+* Maps
+* Parkour
+* Strategies
+* Techniques
+* Tournaments
+* Clans
+* Other
+
+---
+
+## 2. SMASHKARTS PARKOUR DATABASE
+
+Purpose:
+
+Store parkour routes and climbing tutorials.
+
+Commands:
+
+/parkour add
+
+/parkour edit
+
+/parkour delete
+
+/parkour view
+
+/parkour search
+
+Data:
+
+* Map Name
+* Spot Name
+* Description
+* Video URL
+* Difficulty
+* Notes
+
+---
+
+## 3. SMASHKARTS MEDIA LIBRARY
+
+Purpose:
+
+Store videos and media. Sends all new youtube smashkarts related videos to a specific channel.
+
+Commands:
+
+/media channel add
+/media add
+
+/media remove
+
+/media search
+
+/media random
+
+/media latest
+
+Store:
+
+* Title
+* Description
+* Link
+* Tags
+* Creator
+
+---
+
+## 4. SMASHKARTS QUIZ SYSTEM
+
+Admins create quizzes.
+
+Commands:
+
+/quiz create
+
+/quiz edit
+
+/quiz delete
+
+/quiz start
+
+/quiz leaderboard
+
+Features:
+
+* XP rewards
+* Streak system
+* Difficulty levels
+* Categories
+
+---
+
+## 5. TOURNAMENT SYSTEM
+
+This is one of the most important modules. /tournament create gives a form which needs to filled by the administrater. These tournament admin commands can be done by only the admins of *the server* amd need not be done by the specific guild admins. the guild admins are the bot admins and they can edit youtube stuff, smash karts dex thigns and quiz things.
+
+Commands:
+
+/tournament create
+
+/tournament open
+
+/tournament close
+
+/tournament delete
+
+/tournament list
+
+/tournament view
+
+/tournament checkin
+
+/tournament start
+
+/tournament result
+
+Tournament Types:
+
+* Solo
+* Duo
+* Team
+
+---
+
+## SOLO REGISTRATION
+
+Admin creates tournament.
+
+Bot posts embed.
+
+Embed contains Register button.
+
+User clicks button.
+
+Bot:
+
+* Registers player
+* Gives tournament role
+* Stores data
+
+---
+
+## TEAM REGISTRATION
+
+Admin creates team tournament.
+
+Bot posts registration embed.
+
+Captain presses Register Team.
+
+Bot opens modal.
+
+Captain enters:
+
+* Team Name
+* Team Members
+
+Bot automatically:
+
+1. Creates role using team name.
+2. Gives role to captain.
+3. Gives role to teammates.
+4. Role has NO permissions.
+5. Role placed at bottom of role list.
+6. Stores roster in database.
+
+---
+
+## BRACKET SYSTEM
+
+Support:
+
+* Single Elimination
+* Double Elimination
+* Round Robin
+
+Generate brackets automatically.
+
+Match reporting system.
+
+Automatic advancement. Use AI to make a visual bracket which shows progress of each person. 
+
+---
+
+## 6. SmashKarts Account Linking & Verification System
+
+Purpose:
+
+Allow users to securely link their SmashKarts account to their Discord account through a manual verification process handled entirely in DMs.
+
+Commands:
+
+/link
+
+/unlink
+
+/linkedaccount
+
+/admin verifyaccount
+
+/admin unlinkaccount
+
+Verification Flow:
+
+1. User runs `/link` in the server.
+2. Bot immediately opens a DM conversation with the user.
+3. Bot asks the user to upload a screenshot of their SmashKarts profile/account page.
+4. Bot generates a random 4-digit OTP code.
+5. Bot instructs the user to temporarily change their SmashKarts username to the generated OTP code.
+6. User confirms once the name has been changed.
+7. Bot requests another screenshot showing the updated username containing the OTP.
+8. Bot verifies the OTP is visible in the screenshot.
+9. Bot asks the user to provide:
+
+   * Screenshot of their SmashKarts Stats page
+   * Their SmashKarts ID (SKID)
+10. All submitted information is stored in a verification queue.
+11. Administrators can review the submission and approve or deny it.
+12. Once approved:
+
+* Discord account becomes linked to the SmashKarts account.
+* SKID is stored in the database.
+* Stats screenshot is stored for reference.
+* User receives a confirmation DM.
+
+Stored Data:
+
+* Discord User ID
+* SmashKarts Username
+* SmashKarts ID (SKID)
+* Verification Status
+* Verification Date
+* Profile Screenshot
+* Stats Screenshot
+
+Requirements:
+
+* Entire process must occur in DMs.
+* No screenshots or verification data should be posted publicly.
+* Users may only have one linked SmashKarts account at a time.
+* Admins can manually approve, deny, or remove linked accounts.
+* Verification logs should be stored securely in the database.
+
+---
+
+## 7. PLAYER PROFILE SYSTEM
+
+Commands:
+
+/profile
+
+/profile edit
+
+Display:
+
+* Rank in server
+* Level in smashkarts.
+* Wins in smashkarts.
+* Losses in smashkarts.
+  KDR in smashkarts.
+* Tournament History
+* Badges
+  Coins in smashkarts
+  Gems in smashkarts
+  Charecter tokens in smashkarts.
+
+  This should be an image profile which will be sent.
+
+---
+
+## 9. AI ASSISTANT
+
+Commands:
+
+/tips
+
+Uses AI APIs.
+
+Can answer:
+
+* Weapon tips
+* Parkour tips
+* Strategy questions
+  All of this will be done from the database and data the bot has and the bot shall not add any extra tips which are not give to it.
+
+##
+
+---
+
+## 11. DAILY CHALLENGES
+
+Commands:
+
+/challenge
+
+/daily
+
+Rewards XP.
+
+---
+
+## 12. ACHIEVEMENT SYSTEM
+
+Commands:
+
+/achievements
+
+Achievements:
+
+* First Quiz
+* First Tournament
+* Etc.
+
+---
+
+## 13. XP SYSTEM
+
+Commands:
+
+/xp
+
+/level
+
+/xp leaderboard
+
+---
+
+## 14. ECONOMY SYSTEM
+
+Commands:
+
+/balance
+
+/dailycoins
+
+/shop
+
+/inventory
+
+Coins earned from participation.
+
+---
+
+## 15. BADGES SYSTEM
+
+Custom collectible badges.
+
+---
+
+## 16. GIVEAWAY SYSTEM
+
+Commands:
+
+/giveaway create
+
+/giveaway end
+
+/giveaway reroll
+
+---
+
+## 17. EVENT SYSTEM
+
+Commands:
+
+/event create
+
+/event list
+
+/event register
+
+---
+
+## 18. POLL SYSTEM
+
+Commands:
+
+/poll create
+
+/poll close
+
+---
+
+## 19. SUGGESTION SYSTEM
+
+Commands:
+
+/suggest
+
+/suggestions
+
+---
+
+## 20. TICKET SYSTEM
+
+Commands:
+
+/ticket panel
+
+/ticket close
+
+/ticket claim
+
+##
+
+---
+
+## 22. WELCOME SYSTEM
+
+Commands:
+
+/welcome setup
+
+---
+
+## 23. LEAVE SYSTEM
+
+Commands:
+
+/goodbye setup
+
+---
+
+## 24. LOGGING SYSTEM
+
+Log:
+
+* Message edits
+* Message deletes
+* Member joins
+* Member leaves
+* Role changes
+
+---
+
+## 25. AUTOMODERATION
+
+Features:
+
+* Anti spam
+* Anti scam
+* Anti link
+* Anti raid
+
+---
+
+## 26. REACTION ROLES
+
+Commands:
+
+/reactionrole create
+
+---
+
+## 27. MODERATION SYSTEM
+
+Commands:
+
+/ban
+
+/kick
+
+/mute
+
+/warn
+
+/timeout
+
+/purge
+
+---
+
+## 28. SERVER STATISTICS
+
+Commands:
+
+/stats
+
+/serverstats
+
+---
+
+---
+
+## 30. ANNOUNCEMENT SYSTEM
+
+Commands:
+
+/announce
+
+/news
+
+---
+
+## 31. KNOWLEDGE BASE
+
+Commands:
+
+/article add
+
+/article view
+
+/article search
+
+Used for guides.
+
+---
+
+## 32. VIDEO INSTRUCTION SYSTEM
+
+This is extremely important.
+
+Admins can add tutorials.
+
+Commands:
+
+/instruction add
+
+/instruction edit
+
+/instruction delete
+
+/instruction search
+
+/instruction view
+
+Data:
+
+* Name
+* Description
+* Video URL
+* Category
+
+When user searches:
+
+Bot responds with:
+
+Instruction Title
+
+Description
+
+Video Link
+
+Helpful notes
+
+---
+
+## 33. CONTENT MANAGEMENT DASHBOARD
+
+Every piece of content should be manageable through slash commands.
+
+No code changes required.
+
+Admins should be able to add:
+
+* Quiz Questions
+* Media
+* Guides
+* Parkour Routes
+* Dex Entries
+* Tutorials
+
+through Discord itself.
+
+---
+
+## DATABASE DESIGN
+
+Create proper relational structure.
+
+Tables/Collections:
+
+Users
+
+Profiles
+
+Tournaments
+
+Teams
+
+Roles
+
+Media
+
+Parkour
+
+QuizQuestions
+
+QuizResults
+
+Instructions
+
+Achievements
+
+Economy
+
+Logs
+
+XP
+
+Badges
+
+Giveaways
+
+Events
+
+Suggestions
+
+Tickets
+
+Articles
+
+---
+
+## USER EXPERIENCE
+
+Use beautiful embeds.
+
+Use buttons.
+
+Use modals.
+
+Use dropdown menus.
+
+Use pagination.
+
+Use loading indicators.
+
+Use ephemeral responses where appropriate.
+
+---
+
+## PERFORMANCE
+
+Requirements:
+
+* Fast response times
+* Error handling
+* Cooldowns
+* Anti abuse
+* Database indexing
+* Command logging
+
+---
+
+## FUTURE EXPANSION
+
+Bot should be designed so future modules can easily be added.
+
+Potential future modules:
+
+* Website integration
+* Matchmaking
+* Ranked seasons
+* Official API integration
+* AI tournament predictions
+* AI replay analysis
+* Clan wars automation
+* Custom game tracking
+
+---
+
+# FINAL GOAL
+
+The goal is to create the most advanced SmashKarts Discord bot ever made.
+
+The bot should combine:
+
+* Tournament Management
+* Community Management
+* Knowledge Base
+* AI Assistance
+* Moderation
+* Progression Systems
+* Content Management
+
+into one professional platform called Smash Knights.
